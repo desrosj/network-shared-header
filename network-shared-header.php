@@ -28,8 +28,11 @@ class Network_Shared_Header {
 	 * @return void
 	 */
 	function admin_init() {
-		if ( ! is_main_site() ) {
-			return;
+		// If a filter is added to nsh_blog_id, it is possible
+		if ( get_current_blog_id() != apply_filters( 'nsh_blog_id', 1 ) ) {
+			if ( wp_next_scheduled( 'network_shared_header_generate' ) ) {
+				wp_clear_scheduled_hook( 'network_shared_header_generate' );
+			}
 		}
 
 		if ( ! wp_next_scheduled( 'network_shared_header_generate' ) ) {
@@ -44,6 +47,10 @@ class Network_Shared_Header {
 	 * @return void
 	 */
 	function network_shared_header_generate() {
+		if ( get_current_blog_id() != apply_filters( 'nsh_blog_id', 1 ) ) {
+			return;
+		}
+
 		if ( ! locate_template( 'header-network.php' ) ) {
 			return;
 		}
@@ -57,11 +64,7 @@ class Network_Shared_Header {
 		update_site_option( 'network_shared_header', $header );
 	}
 }
-
-// We only need this class on the main site.
-if ( get_current_blog_id() == apply_filters( 'nsh_blog_id', 1 ) ) {
-	$shared_network_header = new Network_Shared_Header();
-}
+$shared_network_header = new Network_Shared_Header();
 
 /**
  * Returns the network shared header.
