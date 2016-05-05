@@ -33,7 +33,7 @@ class Network_Shared_Header {
 		}
 
 		if ( ! wp_next_scheduled( 'network_shared_header_generate' ) ) {
-			wp_schedule_event( time() + 60, 'twicedaily', 'network_shared_header_generate' );
+			wp_schedule_event( time() + 60, apply_filters( 'nsh_refresh_frequency', 'twicedaily' ), 'network_shared_header_generate' );
 		}
 	}
 
@@ -59,7 +59,7 @@ class Network_Shared_Header {
 }
 
 // We only need this class on the main site.
-if ( get_current_blog_id() == apply_filters( 'network_shared_header_blog_id', 1 ) ) {
+if ( get_current_blog_id() == apply_filters( 'nsh_blog_id', 1 ) ) {
 	$shared_network_header = new Network_Shared_Header();
 }
 
